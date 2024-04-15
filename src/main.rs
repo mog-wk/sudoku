@@ -50,7 +50,12 @@ fn main() -> Result<(), Error> {
     )?;
 
     // dev
-    let dev_box = clickbox::new().with_pos(20, 20).with_dim(50, 50).build()?;
+    let dev_box = clickbox::new()
+        .with_pos(240, 120)
+        .with_dim(240, 40)
+        .text("dev_box render test".to_string())
+        .fill_color(Color::RGB(127, 127, 0))
+        .build()?;
     //dev_box.exec();
 
     println!("{:?}", dev_box);
@@ -73,22 +78,7 @@ fn main() -> Result<(), Error> {
 
         // ========== Render testing ===============
 
-        utils::render::text(
-            &mut canvas,
-            &texture_creator,
-            &font_bold,
-            Color::RGB(127, 127, 127),
-            "Bold Text".to_string(),
-            (16, 16, 256, 64),
-        )?;
-        utils::render::text(
-            &mut canvas,
-            &texture_creator,
-            &font_regular,
-            Color::RGB(255, 255, 255),
-            "Regular Text".to_string(),
-            (16, 16 + 80, 256, 64),
-        )?;
+        dev_box.render(&mut canvas, &texture_creator, &font_regular)?;
 
         canvas.present();
 

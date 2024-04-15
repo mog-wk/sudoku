@@ -10,7 +10,7 @@ pub fn text(
     texture_creator: &TextureCreator<WindowContext>,
     font: &sdl2::ttf::Font,
     color: Color,
-    text: String,
+    text: &String,
     (x, y, w, h): (i32, i32, u32, u32),
 ) -> Result<(), Error> {
     // test

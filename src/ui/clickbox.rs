@@ -1,8 +1,12 @@
 use crate::error::Error;
+use crate::utils::render;
 
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
+use sdl2::render::TextureCreator;
 use sdl2::render::WindowCanvas;
+use sdl2::ttf::Font;
+use sdl2::video::WindowContext;
 
 #[derive(Debug)]
 pub struct ClickBox {
@@ -22,11 +26,19 @@ impl ClickBox {
     pub fn exec(&self) -> () {
         (self.event)();
     }
-    pub fn render(&self, canvas: &mut WindowCanvas) -> Result<(), Error> {
+    pub fn render(
+        &self,
+        canvas: &mut WindowCanvas,
+        txc: &TextureCreator<WindowContext>,
+        font: &Font,
+    ) -> Result<(), Error> {
         let rt = Rect::new(self.pos.0, self.pos.1, self.dim.0, self.dim.1);
         canvas.set_draw_color(self.border_color);
         canvas.set_draw_color(self.fill_color);
         canvas.fill_rect(rt)?;
+
+        let limits = (self.pos.0, self.pos.1, self.dim.0, self.dim.1);
+        render::text(canvas, txc, font, self.text_color, &self.text, limits)?;
         Ok(())
     }
 }
@@ -68,6 +80,14 @@ impl ClickBoxBuilder {
         self.event = Some(event);
         self
     }
+    pub fn fill_color(mut self, color: Color) -> Self {
+        self.fill_color = Some(color);
+        self
+    }
+    pub fn text(mut self, text: String) -> Self {
+        self.text = Some(text);
+        self
+    }
 
     pub fn build(self) -> Result<ClickBox, Error> {
         let pos = self
@@ -80,7 +100,9 @@ impl ClickBoxBuilder {
         let border_color = self.border_color.unwrap_or(Color::RGBA(0, 0, 0, 0));
         let text_color = self.text_color.unwrap_or(Color::RGB(155, 155, 155));
 
-        let text = self.text.unwrap_or("".to_string());
+        let text = self
+            .text
+            .ok_or(Error::Generic("Invalid text".to_string()))?;
 
         let event = self.event.unwrap_or(|| ());
 
