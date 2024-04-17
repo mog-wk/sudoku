@@ -28,8 +28,10 @@ impl ClickBox {
         (self.event)();
     }
     pub fn click_event(&self) -> () {
-        //self.clicked = true;
-        (self.exec());
+        self.exec();
+    }
+    pub fn set_clicked(&mut self, val: bool) {
+        self.clicked = val;
     }
     pub fn contains_point(&self, p: (i32, i32)) -> bool {
         p.0 > self.pos.0

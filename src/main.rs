@@ -8,6 +8,7 @@ use error::Error;
 use ui::clickbox;
 use utils::window;
 
+use std::collections::HashSet;
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -19,6 +20,8 @@ use utils::input;
 
 // dev
 use sdl2::pixels::Color;
+
+use crate::ui::clickbox::ClickBox;
 
 // TODO: Proper err
 fn main() -> Result<(), Error> {
@@ -56,23 +59,22 @@ fn main() -> Result<(), Error> {
     )?;
 
     // dev
-    let dev_box = clickbox::new()
+    let mut dev_box = clickbox::new()
         .with_pos(240, 120)
         .with_dim(240, 40)
         .text("dev_box render test".to_string())
         .fill_color(Color::RGB(127, 127, 0))
         .with_event(|| {
-            println!("event executed!!");
+            println!("dev box has it\'s event executed!!");
         })
         .build()?;
     dev_box.exec();
-
-    println!("{:?}", dev_box);
-    let ui_elements = vec![&dev_box];
+    let mut ui_elements = vec![&mut dev_box];
 
     let mut event_pump = sdl_ctx.event_pump()?;
 
-    let mut mouse_buffer = sdl_ctx.mouse();
+    let mut mouse_buffer = HashSet::new();
+    let mut cbox_focus: Option<usize> = None;
 
     'app_loop: loop {
         // handle input
@@ -87,25 +89,21 @@ fn main() -> Result<(), Error> {
                 _ => (),
             }
         }
-        let mouse_state = event_pump.mouse_state();
-        let mouse_buttons = mouse_state.pressed_mouse_buttons();
-
-        for button in mouse_buttons {
-            match button {
-                MouseButton::Left => {
-                    input::mouse_input(&ui_elements, mouse_state.x(), mouse_state.y())
-                }
-                _ => println!("{:?}", button),
-                _ => (),
-            }
-        }
+        input::mouse_input(
+            &mut ui_elements,
+            event_pump.mouse_state(),
+            &mouse_buffer,
+            &mut cbox_focus,
+        );
 
         canvas.set_draw_color(Color::RGB(0, 0, 0));
         canvas.clear();
 
         // ========== Render testing ===============
 
-        dev_box.render(&mut canvas, &texture_creator, &font_regular)?;
+        for cbox in ui_elements.iter() {
+            cbox.render(&mut canvas, &texture_creator, &font_regular)?;
+        }
 
         canvas.present();
 
