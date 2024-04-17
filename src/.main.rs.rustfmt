@@ -93,9 +93,9 @@ fn main() -> Result<(), Error> {
         for button in mouse_buttons {
             match button {
                 MouseButton::Left => {
-                    input::mouse_input(&ui_elements, mouse_state.x(), mouse_state.y())
+                    input::mouse_input(&ui_elements, (mouse_state.x(), mouse_state.y()))
                 }
-                _ => println!("{:?}", button),
+                _ => println!("{:?}", event),
                 _ => (),
             }
         }

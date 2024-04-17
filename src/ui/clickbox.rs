@@ -16,6 +16,7 @@ pub struct ClickBox {
     border_color: Color,
     text_color: Color,
     text: String,
+    clicked: bool,
     event: fn() -> (),
 }
 
@@ -25,6 +26,16 @@ impl ClickBox {
     }
     pub fn exec(&self) -> () {
         (self.event)();
+    }
+    pub fn click_event(&self) -> () {
+        //self.clicked = true;
+        (self.exec());
+    }
+    pub fn contains_point(&self, p: (i32, i32)) -> bool {
+        p.0 > self.pos.0
+            && p.0 < self.pos.0 + self.dim.0 as i32
+            && p.1 > self.pos.1
+            && p.1 < self.pos.1 + self.dim.1 as i32
     }
     pub fn render(
         &self,
@@ -113,6 +124,7 @@ impl ClickBoxBuilder {
             border_color,
             text_color,
             text,
+            clicked: false,
             event,
         })
     }
