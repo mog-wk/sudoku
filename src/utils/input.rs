@@ -5,7 +5,7 @@ use sdl2::mouse::MouseState;
 use std::collections::HashSet;
 
 pub fn mouse_input(
-    ui_elements: &mut Vec<&mut ClickBox>,
+    ui_elements: &mut Vec<ClickBox>,
     mouse_state: MouseState,
     mouse_buffer: &HashSet<MouseButton>,
     clickbox_focus: &mut Option<usize>,
@@ -24,12 +24,12 @@ pub fn mouse_input(
                         cbox.click_event();
                         cbox.set_clicked(true);
                         *clickbox_focus = Some(i);
-                        println!("{:?}", cbox);
+                        //println!("{:?}", cbox);
                     }
                 }
             }
-            _ => println!("{:?}", button),
-            //_ => if cbox_buffer.is_some() {},
+            //_ => println!("{:?}", button),
+            _ => (),
         };
     }
     for button in released_buttons {

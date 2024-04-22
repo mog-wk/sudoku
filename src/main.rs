@@ -1,6 +1,7 @@
 #![allow(unused)]
 
 mod error;
+mod lib;
 mod sudoku;
 mod ui;
 mod utils;
@@ -12,6 +13,8 @@ use utils::window;
 use std::collections::HashSet;
 use std::thread::sleep;
 use std::time::Duration;
+
+use crate::lib::AppState;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -56,25 +59,14 @@ fn main() -> Result<(), Error> {
         128,
     )?;
 
-    // dev
-    let mut dev_box = clickbox::new()
-        .with_pos(240, 120)
-        .with_dim(240, 40)
-        .text("dev_box render test".to_string())
-        .fill_color(Color::RGB(127, 127, 0))
-        .with_event(|| {
-            println!("dev box has it\'s event executed!!");
-        })
-        .build()?;
-    dev_box.exec();
-    let mut ui_elements = vec![&mut dev_box];
+    let mut menu = ui::menu::MainMenu::dev_test()?;
 
     let mut event_pump = sdl_ctx.event_pump()?;
 
     let mut mouse_buffer = HashSet::new();
     let mut cbox_focus: Option<usize> = None;
 
-    //let mut app_state = states
+    let mut app_state: AppState = AppState::Menu;
 
     'app_loop: loop {
         // handle input
@@ -88,20 +80,23 @@ fn main() -> Result<(), Error> {
                 _ => (),
             }
         }
+
         input::mouse_input(
-            &mut ui_elements,
+            &mut menu.input_boxes,
             event_pump.mouse_state(),
             &mouse_buffer,
             &mut cbox_focus,
         );
 
-        canvas.set_draw_color(Color::RGB(0, 0, 0));
-        canvas.clear();
+        match app_state {
+            AppState::Menu => {
+                canvas.set_draw_color(Color::RGB(0, 0, 0));
+                canvas.clear();
 
-        // ========== Render testing ===============
-
-        for cbox in ui_elements.iter() {
-            cbox.render(&mut canvas, &texture_creator, &font_regular)?;
+                // ========== Render testing ===============
+                menu.render(&mut canvas, &texture_creator, &font_regular)?;
+            }
+            _ => (),
         }
 
         canvas.present();
