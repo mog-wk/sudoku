@@ -1,6 +1,7 @@
 #![allow(unused)]
 
 mod error;
+mod sudoku;
 mod ui;
 mod utils;
 
@@ -38,10 +39,7 @@ fn main() -> Result<(), Error> {
         .opengl()
         .build()?;
 
-    let mut canvas = app_window
-        .into_canvas()
-        //.present_vsync()
-        .build()?;
+    let mut canvas = app_window.into_canvas().build()?;
 
     let texture_creator = canvas.texture_creator();
 
@@ -76,6 +74,8 @@ fn main() -> Result<(), Error> {
     let mut mouse_buffer = HashSet::new();
     let mut cbox_focus: Option<usize> = None;
 
+    //let mut app_state = states
+
     'app_loop: loop {
         // handle input
         for event in event_pump.poll_iter() {
@@ -84,8 +84,7 @@ fn main() -> Result<(), Error> {
                 Event::KeyDown {
                     keycode: Some(Keycode::Escape),
                     ..
-                } => break 'app_loop, // dev
-                //_ => println!("{:?}", event),
+                } => break 'app_loop,
                 _ => (),
             }
         }
