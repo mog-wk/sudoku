@@ -1,10 +1,13 @@
 use crate::ui::clickbox::ClickBox;
+use crate::AppContext;
 use sdl2::mouse::MouseButton;
 use sdl2::mouse::MouseState;
+use sudoku::AppState;
 
 use std::collections::HashSet;
 
 pub fn mouse_input(
+    app_ctx: &mut AppContext,
     ui_elements: &mut Vec<ClickBox>,
     mouse_state: MouseState,
     mouse_buffer: &HashSet<MouseButton>,
@@ -21,7 +24,7 @@ pub fn mouse_input(
             MouseButton::Left => {
                 for (i, cbox) in ui_elements.iter_mut().enumerate() {
                     if cbox.contains_point((x, y)) {
-                        cbox.click_event();
+                        app_ctx.state = cbox.click_event();
                         cbox.set_clicked(true);
                         *clickbox_focus = Some(i);
                         //println!("{:?}", cbox);

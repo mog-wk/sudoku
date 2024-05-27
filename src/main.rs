@@ -1,24 +1,21 @@
 #![allow(unused)]
 
 mod error;
-mod lib;
 mod sudoku;
 mod ui;
 mod utils;
 
+use ::sudoku::AppState;
 use error::Error;
 use ui::clickbox;
 use utils::window;
 
-use std::collections::HashSet;
-use std::thread::sleep;
-use std::time::Duration;
-
-use crate::lib::AppState;
-
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::mouse::MouseButton;
+use std::collections::HashSet;
+use std::thread::sleep;
+use std::time::Duration;
 
 use utils::input;
 
@@ -67,7 +64,7 @@ fn main() -> Result<(), Error> {
     let mut mouse_buffer = HashSet::new();
     let mut cbox_focus: Option<usize> = None;
 
-    let mut app_state: AppState = AppState::Menu;
+    let mut app_ctx = AppContext::default();
 
     'app_loop: loop {
         // handle input
@@ -82,28 +79,44 @@ fn main() -> Result<(), Error> {
             }
         }
 
-        input::mouse_input(
-            &mut menu.input_boxes,
-            event_pump.mouse_state(),
-            &mouse_buffer,
-            &mut cbox_focus,
-        );
-
-        match app_state {
+        match app_ctx.state {
             AppState::Menu => {
+                input::mouse_input(
+                    &mut app_ctx,
+                    &mut menu.input_boxes,
+                    event_pump.mouse_state(),
+                    &mouse_buffer,
+                    &mut cbox_focus,
+                );
                 canvas.set_draw_color(Color::RGB(0, 0, 0));
                 canvas.clear();
-
-                // ========== Render testing ===============
                 menu.render(&mut canvas, &texture_creator, &font_regular)?;
+            }
+            AppState::InGame => {
+                canvas.set_draw_color(Color::RGB(200, 200, 200));
+                canvas.clear();
             }
             _ => (),
         }
 
+        println!("{:?}", app_ctx);
         canvas.present();
 
         sleep(Duration::new(0, 1_000_000_000_u32 / 60));
     }
 
     Ok(())
+}
+
+#[derive(Debug)]
+struct AppContext {
+    state: AppState,
+}
+
+impl Default for AppContext {
+    fn default() -> Self {
+        Self {
+            state: AppState::Menu,
+        }
+    }
 }

@@ -7,6 +7,7 @@ use sdl2::render::TextureCreator;
 use sdl2::render::WindowCanvas;
 use sdl2::ttf::Font;
 use sdl2::video::WindowContext;
+use sudoku::AppState;
 
 #[derive(Debug)]
 pub struct ClickBox {
@@ -17,18 +18,18 @@ pub struct ClickBox {
     text_color: Color,
     text: String,
     clicked: bool,
-    event: fn() -> (),
+    event: fn() -> AppState,
 }
 
 impl ClickBox {
     pub fn new() -> ClickBoxBuilder {
         ClickBoxBuilder::new()
     }
-    pub fn exec(&self) -> () {
-        (self.event)();
+    pub fn exec(&self) -> AppState {
+        (self.event)()
     }
-    pub fn click_event(&self) -> () {
-        self.exec();
+    pub fn click_event(&self) -> AppState {
+        self.exec()
     }
     pub fn set_clicked(&mut self, val: bool) {
         self.clicked = val;
@@ -68,7 +69,7 @@ pub struct ClickBoxBuilder {
 
     text: Option<String>,
     textlen: Option<usize>,
-    event: Option<fn() -> ()>,
+    event: Option<fn() -> AppState>,
 }
 
 impl ClickBoxBuilder {
@@ -96,7 +97,7 @@ impl ClickBoxBuilder {
         self.textlen = Some(len);
         self
     }
-    pub fn with_event(mut self, event: fn() -> ()) -> Self {
+    pub fn with_event(mut self, event: fn() -> AppState) -> Self {
         self.event = Some(event);
         self
     }
@@ -135,7 +136,7 @@ impl ClickBoxBuilder {
             .text
             .ok_or(Error::Generic("Invalid text".to_string()))?;
 
-        let event = self.event.unwrap_or(|| ());
+        let event = self.event.unwrap();
 
         Ok(ClickBox {
             pos,

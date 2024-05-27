@@ -1,7 +1,11 @@
 // Render base on cur state
+#[derive(Debug)]
 pub enum AppState {
     Menu,
-    Options,
-    InGame,
     GameSelection,
+    Settings,
+    InGame,
+    About,
+    Quit,
+    DEVTEST,
 }

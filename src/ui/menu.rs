@@ -1,4 +1,4 @@
-use super::{clickbox, readbox};
+use super::{clickbox, funcs, readbox};
 use crate::Error;
 use sdl2::{
     pixels::Color,
@@ -29,6 +29,7 @@ impl MainMenu {
             .fill_color(Color::RGB(127, 127, 0))
             .with_event(|| {
                 println!("dev box has it\'s event executed!!");
+                sudoku::AppState::DEVTEST
             })
             .build()?;
         let read_boxes = vec![];
@@ -61,9 +62,7 @@ impl MainMenu {
             .with_textlen(Self::TEXTLEN)
             .text("Play".to_string())
             .fill_color(Color::RGB(127, 0, 0))
-            .with_event(|| {
-                println!("Play TODO");
-            })
+            .with_event(funcs::game)
             .build()?;
         let mut to_setting_box = clickbox::new()
             .with_pos(Self::BOX_ALIGN_X, Self::BOX_ALIGN_Y + y_offset)
@@ -71,9 +70,7 @@ impl MainMenu {
             .with_textlen(Self::TEXTLEN)
             .text("Settings".to_string())
             .fill_color(Color::RGB(127, 0, 0))
-            .with_event(|| {
-                println!("Settings TODO");
-            })
+            .with_event(funcs::settings)
             .build()?;
         let mut to_about_box = clickbox::new()
             .with_pos(Self::BOX_ALIGN_X, Self::BOX_ALIGN_Y + y_offset * 2)
@@ -81,9 +78,7 @@ impl MainMenu {
             .with_textlen(Self::TEXTLEN)
             .text("About".to_string())
             .fill_color(Color::RGB(127, 0, 0))
-            .with_event(|| {
-                println!("About TODO");
-            })
+            .with_event(funcs::about)
             .build()?;
         let mut to_quit_box = clickbox::new()
             .with_pos(Self::BOX_ALIGN_X, Self::BOX_ALIGN_Y + y_offset * 3)
@@ -91,9 +86,7 @@ impl MainMenu {
             .with_textlen(Self::TEXTLEN)
             .text("Quit".to_string())
             .fill_color(Color::RGB(127, 0, 0))
-            .with_event(|| {
-                println!("Quitting TODO");
-            })
+            .with_event(funcs::quit)
             .build()?;
 
         Ok(Self {
