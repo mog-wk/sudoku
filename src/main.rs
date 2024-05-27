@@ -49,7 +49,7 @@ fn main() -> Result<(), Error> {
     // TODO make objective dir
     //let main_dir = ...
 
-    // init font
+    // load font
     let mut font_regular = ttf_ctx.load_font(
         std::path::Path::new(&"./fonts/OpenSans/OpenSans-Regular.ttf"),
         128,
@@ -59,7 +59,8 @@ fn main() -> Result<(), Error> {
         128,
     )?;
 
-    let mut menu = ui::menu::MainMenu::dev_test()?;
+    // init menu
+    let mut menu = ui::menu::MainMenu::new()?;
 
     let mut event_pump = sdl_ctx.event_pump()?;
 

@@ -47,6 +47,7 @@ impl ClickBox {
     ) -> Result<(), Error> {
         let rt = Rect::new(self.pos.0, self.pos.1, self.dim.0, self.dim.1);
         canvas.set_draw_color(self.border_color);
+        // TODO BORDER COLOR
         canvas.set_draw_color(self.fill_color);
         canvas.fill_rect(rt)?;
 
@@ -66,6 +67,7 @@ pub struct ClickBoxBuilder {
     text_color: Option<Color>,
 
     text: Option<String>,
+    textlen: Option<usize>,
     event: Option<fn() -> ()>,
 }
 
@@ -78,6 +80,7 @@ impl ClickBoxBuilder {
             border_color: None,
             text_color: None,
             text: None,
+            textlen: None,
             event: None,
         }
     }
@@ -89,6 +92,10 @@ impl ClickBoxBuilder {
         self.dim = Some((w, h));
         self
     }
+    pub fn with_textlen(mut self, len: usize) -> Self {
+        self.textlen = Some(len);
+        self
+    }
     pub fn with_event(mut self, event: fn() -> ()) -> Self {
         self.event = Some(event);
         self
@@ -98,7 +105,18 @@ impl ClickBoxBuilder {
         self
     }
     pub fn text(mut self, text: String) -> Self {
-        self.text = Some(text);
+        if let Some(len) = self.textlen {
+            // append text with spaces to match textlen
+            let diff = len - text.len();
+            let mut st = String::from(text);
+            for _ in 0..diff {
+                st.push(' ');
+            }
+            self.text = Some(st);
+        } else {
+            self.textlen = Some(text.len());
+            self.text = Some(text);
+        }
         self
     }
 
